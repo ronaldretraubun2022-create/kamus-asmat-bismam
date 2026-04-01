@@ -9,28 +9,30 @@ SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- TAMPILAN HEADER ---
-# --- KODE PEMBERSIH TOTAL (PASTI HILANG) ---
-st.markdown("""
+# --- KODE PEMBERSIH TOTAL ---
+st.markdown(
+    """
     <style>
-    /* 1. Hilangkan Menu & Header Atas */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    .stAppDeployButton {display: none !important;}
-
-    /* 2. Hilangkan Footer & Watermark Bawah */
-    footer {visibility: hidden;}
-    [data-testid="stStatusWidget"] {display: none !important;}
-
-    /* 3. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
-    .viewerBadge_container__1QS1n {display: none !important;}
-    .viewerBadge_link__1QS1n {display: none !important;}
-    [data-testid="stToolbar"] {display: none !important;}
-    
-    /* 4. Hilangkan garis dekorasi warna-warni */
-    [data-testid="stDecoration"] {display: none !important;}
+    /* 1. Hilangkan Header & Footer Atas */
+    header, footer, .stDeployButton, #MainMenu {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* 2. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
+    [data-testid="stStatusWidget"], 
+    .viewerBadge_container__1QS1n, 
+    .viewerBadge_link__1QS1n, 
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"] {
+        display: none !important;
+    }
     </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
+# --- TAMPILAN HEADER DENGAN LOGO ---
+col1, col2, col3 = st.columns([1, 1, 1])
 # --- TAMPILAN HEADER DENGAN LOGO ---
 col1, col2, col3 = st.columns([1, 1, 1])
 col1, col2, col3 = st.columns([1, 1, 1])
