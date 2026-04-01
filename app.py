@@ -11,14 +11,20 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # --- TAMPILAN HEADER ---
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
 # --- SEMBUNYIKAN FOOTER & TOMBOL GITHUB ---
+# --- KODE PENGHILANG SEMUA TOMBOL (GITHUB & STREAMLIT) ---
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            [data-testid="stStatusWidget"] {visibility: hidden;}
+            /* Menghilangkan tombol GitHub dan Mahkota */
+            [data-testid="stStatusWidget"] {display: none !important;}
             .viewerBadge_container__1QS1n {display: none !important;}
             .stAppDeployButton {display: none !important;}
+            /* Menghilangkan toolbar di pojok kanan bawah secara paksa */
+            [data-testid="stToolbar"] {display: none !important;}
+            /* Menghilangkan dekorasi tambahan di HP */
+            div[data-testid="stDecoration"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
