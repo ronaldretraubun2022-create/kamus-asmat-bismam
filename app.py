@@ -14,7 +14,8 @@ st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # Menggunakan gambar perisai Asmat sebagai identitas budaya
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Shield_from_the_Asmat_people.jpg/220px-Shield_from_the_Asmat_people.jpg", width=120)
+    # Menampilkan logo Museum Asmat yang baru diupload
+        st.image("MUSEUM ASMAT.png", width=150)
 
 st.markdown("<h1 style='text-align: center; color: #8B4513; margin-bottom: 0;'>🏹 KAMUS BAHASA ASMAT</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #5D4037; font-weight: bold; font-size: 20px;'>RUMPUN BISMAM</p>", unsafe_allow_html=True)
