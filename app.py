@@ -12,20 +12,27 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
 # --- SEMBUNYIKAN FOOTER & TOMBOL GITHUB ---
 # --- KODE PENGHILANG SEMUA TOMBOL (GITHUB & STREAMLIT) ---
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            /* Menghilangkan tombol GitHub dan Mahkota */
-            [data-testid="stStatusWidget"] {display: none !important;}
-            .viewerBadge_container__1QS1n {display: none !important;}
-            .stAppDeployButton {display: none !important;}
-            /* Menghilangkan toolbar di pojok kanan bawah secara paksa */
-            [data-testid="stToolbar"] {display: none !important;}
-            /* Menghilangkan dekorasi tambahan di HP */
-            div[data-testid="stDecoration"] {display: none !important;}
-            </style>
+# --- KODE PEMBERSIH TOTAL (GITHUB & STREAMLIT) ---
+st.markdown(
+    """
+    <style>
+    /* Menghilangkan seluruh area header dan footer secara paksa */
+    header, footer, .stDeployButton, #MainMenu, .viewerBadge_link__1QS1n, .viewerBadge_container__1QS1n {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* Menghilangkan toolbar pojok kanan bawah di HP */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    /* Menghilangkan garis warna-warni di paling atas */
+    [data-testid="stDecoration"] {
+        display: none !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 1, 1])
