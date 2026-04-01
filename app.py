@@ -8,32 +8,41 @@ SUPABASE_URL = "https://obmomopxcmsgzjjseevh.supabase.co"
 SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- TAMPILAN HEADER ---
-# --- KODE PEMBERSIH TOTAL ---
+# --- KODE PAMUNGKAS PEMBERSIH TOTAL ---
 st.markdown(
     """
     <style>
-    /* 1. Hilangkan Header & Footer Utama */
+    /* 1. Hilangkan Header, Footer, dan Menu Atas */
     header, footer, .stDeployButton, #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
 
-    /* 2. SAPU JAGAT: Hilangkan semua elemen di pojok kanan bawah & atas */
-    [data-testid="stStatusWidget"], 
-    [data-testid="stToolbar"], 
-    [data-testid="stDecoration"],
+    /* 2. SEMBUNYIKAN SEMUA BADGE & TOOLBAR (GITHUB/STREAMLIT) */
     div[class^="viewerBadge"],
     div[class*="viewerBadge"],
-    button[title="View source on GitHub"] {
+    div[data-testid="stStatusWidget"],
+    div[data-testid="stToolbar"],
+    div[data-testid="stDecoration"],
+    button[title="View source on GitHub"],
+    .stAppToolbar {
         display: none !important;
         visibility: hidden !important;
+        height: 0px !important;
+        width: 0px !important;
         opacity: 0 !important;
+        pointer-events: none !important;
     }
 
-    /* 3. Tambahan khusus untuk perangkat Mobile/HP */
-    @media only screen and (max-width: 768px) {
-        div[class^="viewerBadge"], .stAppToolbar {
+    /* 3. Paksa aplikasi agar tidak memberikan ruang di bawah untuk tombol */
+    .stApp {
+        margin-bottom: -50px !important;
+        padding-bottom: 0px !important;
+    }
+
+    /* 4. Khusus untuk tampilan Mobile/HP */
+    @media screen and (max-width: 768px) {
+        div[class^="viewerBadge"] {
             display: none !important;
         }
     }
