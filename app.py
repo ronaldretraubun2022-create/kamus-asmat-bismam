@@ -13,18 +13,29 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.markdown(
     """
     <style>
-    /* 1. Hilangkan Header & Footer Atas */
+    /* 1. Hilangkan Header & Footer Utama */
     header, footer, .stDeployButton, #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
-    /* 2. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
+
+    /* 2. SAPU JAGAT: Hilangkan semua elemen di pojok kanan bawah & atas */
     [data-testid="stStatusWidget"], 
-    .viewerBadge_container__1QS1n, 
-    .viewerBadge_link__1QS1n, 
-    [data-testid="stToolbar"],
-    [data-testid="stDecoration"] {
+    [data-testid="stToolbar"], 
+    [data-testid="stDecoration"],
+    div[class^="viewerBadge"],
+    div[class*="viewerBadge"],
+    button[title="View source on GitHub"] {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* 3. Tambahan khusus untuk perangkat Mobile/HP */
+    @media only screen and (max-width: 768px) {
+        div[class^="viewerBadge"], .stAppToolbar {
+            display: none !important;
+        }
     }
     </style>
     """,
