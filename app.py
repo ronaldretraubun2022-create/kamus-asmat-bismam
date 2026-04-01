@@ -30,33 +30,31 @@ if menu == "🔍 Cari Kata":
     search = st.text_input("Ketik kata dalam Asmat atau Indonesia...")
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
-        if res.data:
-            for item in res.data:
-                # --- TAMPILAN KARTU KAMUS ETNIK ---
-            for item in res.data:
-                st.markdown(f"""
-                <div style="
-                    border: 1px solid #EADDCA; 
-                    border-left: 8px solid #8B4513; 
-                    padding: 20px; 
-                    border-radius: 15px; 
-                    background-color: #FFFDF9; 
-                    margin-bottom: 15px; 
-                    box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
-                ">
-                    <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
-                    <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
-                    <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
-                        <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
-                        <b>{item['arti_indonesia']}</b>
-                    </p>
-                    <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px italic #6F4E37;">
-                        <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
-                            "Contoh: {item['contoh_kalimat']}"
-                        </p>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                if res.data:
+                    for item in res.data:
+                        st.markdown(f"""
+                        <div style="
+                        border: 1px solid #EADDCA; 
+                        border-left: 8px solid #8B4513; 
+                        padding: 20px; 
+                        border-radius: 15px; 
+                        background-color: #FFFDF9; 
+                        margin-bottom: 15px; 
+                        box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
+                            ">
+                            <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
+                            <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
+                            <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
+                                <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
+                                <b>{item['arti_indonesia']}</b>
+                            </p>
+                            <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px italic #6F4E37;">
+                                <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
+                                    "Contoh: {item['contoh_kalimat']}"
+                                </p>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
             # --- LANJUTAN DI BAWAH HASIL CARI ---
                
         else:
