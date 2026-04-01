@@ -34,7 +34,7 @@ if menu == "🔍 Cari Kata":
                     # Buat file Excel di memori
                 output = io.BytesIO()
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                df_export.to_excel(writer, index=False)
+                    df_export.to_excel(writer, index=False)
                     
                 st.download_button(
                         label="📊 Download Kamus (Excel)",
