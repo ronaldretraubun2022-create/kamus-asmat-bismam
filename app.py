@@ -28,20 +28,7 @@ if menu == "🔍 Cari Kata":
                 st.success(f"**{item['kata_asmat']}** = {item['arti_indonesia']}")
                 st.write(f"*Contoh: {item['contoh_kalimat']}*")
             # --- LANJUTAN DI BAWAH HASIL CARI ---
-                st.divider()
-                df_export = pd.DataFrame(res.data)
-                    
-                    # Buat file Excel di memori
-                output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                    df_export.to_excel(writer, index=False)
-                    
-                st.download_button(
-                        label="📊 Download Kamus (Excel)",
-                        data=output.getvalue(),
-                        file_name="Kamus_Asmat_Bismam.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )    
+               
         else:
             st.info("Kata belum ditemukan atau masih menunggu verifikasi.")
 
@@ -65,7 +52,23 @@ elif menu == "🛡️ Verifikasi Admin":
     st.subheader("Panel Verifikasi Tim Tata Bahasa")
     password = st.text_input("Masukkan Kode Akses Admin", type="password")
     
-    if password == "Bismam2026": # Ganti password ini sesuai keinginanmu
+    if password == "Bismam2026":# Ganti password ini sesuai keinginanmu
+        # --- TOMBOL DOWNLOAD DATABASE UNTUK ADMIN ---
+        st.info("📊 Panel Download Database")
+        all_data = supabase.table("kamus_bismam").select("*").execute()
+        if all_data.data:
+            df_admin = pd.DataFrame(all_data.data)
+            output_admin = io.BytesIO()
+            with pd.ExcelWriter(output_admin, engine='openpyxl') as writer:
+                df_admin.to_excel(writer, index=False)
+            
+            st.download_button(
+                label="📥 Download Database Lengkap (Excel)",
+                data=output_admin.getvalue(),
+                file_name="Kamus_Asmat_Bismam_Lengkap.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        st.divider()
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").execute()
         if res.data:
             for item in res.data:
