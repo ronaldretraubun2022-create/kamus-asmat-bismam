@@ -10,8 +10,15 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- TAMPILAN HEADER ---
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
-st.markdown("<h1 style='text-align: center; color: #8B4513;'>🏹 KAMUS BAHASA ASMAT</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: #5D4037;'>RUMPUN BISMAM</h3>", unsafe_allow_html=True)
+# --- TAMPILAN HEADER DENGAN LOGO ---
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    # Menggunakan gambar perisai Asmat sebagai identitas budaya
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Shield_from_the_Asmat_people.jpg/220px-Shield_from_the_Asmat_people.jpg", width=120)
+
+st.markdown("<h1 style='text-align: center; color: #8B4513; margin-bottom: 0;'>🏹 KAMUS BAHASA ASMAT</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #5D4037; font-weight: bold; font-size: 20px;'>RUMPUN BISMAM</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6F4E37; font-style: italic;'>Melestarikan Budaya Lewat Bahasa - Papua Selatan</p>", unsafe_allow_html=True)
 st.divider()
 
 # Menu Samping
@@ -25,8 +32,31 @@ if menu == "🔍 Cari Kata":
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
         if res.data:
             for item in res.data:
-                st.success(f"**{item['kata_asmat']}** = {item['arti_indonesia']}")
-                st.write(f"*Contoh: {item['contoh_kalimat']}*")
+                # --- TAMPILAN KARTU KAMUS ETNIK ---
+            for item in res.data:
+                st.markdown(f"""
+                <div style="
+                    border: 1px solid #EADDCA; 
+                    border-left: 8px solid #8B4513; 
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    background-color: #FFFDF9; 
+                    margin-bottom: 15px; 
+                    box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
+                ">
+                    <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
+                    <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
+                    <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
+                        <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
+                        <b>{item['arti_indonesia']}</b>
+                    </p>
+                    <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px italic #6F4E37;">
+                        <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
+                            "Contoh: {item['contoh_kalimat']}"
+                        </p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
             # --- LANJUTAN DI BAWAH HASIL CARI ---
                
         else:
