@@ -30,57 +30,65 @@ if menu == "🔍 Cari Kata":
     search = st.text_input("Ketik kata dalam Asmat atau Indonesia...")
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
-                if res.data:
+        if res.data:
+                    # --- TAMPILAN KARTU KAMUS ETNIK ---
                     for item in res.data:
                         st.markdown(f"""
                         <div style="
-                        border: 1px solid #EADDCA; 
-                        border-left: 8px solid #8B4513; 
-                        padding: 20px; 
-                        border-radius: 15px; 
-                        background-color: #FFFDF9; 
-                        margin-bottom: 15px; 
-                        box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
-                            ">
-                            <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
-                            <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
-                            <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
-                                <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
-                                <b>{item['arti_indonesia']}</b>
-                            </p>
-                            <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px italic #6F4E37;">
-                                <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
-                                    "Contoh: {item['contoh_kalimat']}"
-                                </p>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-            # --- LANJUTAN DI BAWAH HASIL CARI ---
-               
+                            border: 1px solid #EADDCA; 
+                            border-left: 8px solid #8B4513; 
+                            padding: 20px; 
+                            border-radius: 15px; 
+                            background-color: #FFFDF9; 
+                            margin-bottom: 15px; 
+                            box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
+                        <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
+                    <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
+                    <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
+                        <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
+                        <b>{item['arti_indonesia']}</b>
+                    </p>
+                    <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px solid #6F4E37;">
+                        <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
+                            "Contoh: {item['contoh_kalimat']}"
+                        </p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
         else:
             st.info("Kata belum ditemukan atau masih menunggu verifikasi.")
 
 # --- MENU 2: SETOR KATA ---
 elif menu == "📝 Setor Kata (Murid/Guru)":
-    st.subheader("Kontribusi Kata Baru")
-    with st.form("form_setor"):
-        nama = st.text_input("Nama Lengkap")
-        peran = st.selectbox("Peran", ["Murid", "Guru", "Masyarakat"])
-        asmat = st.text_input("Kata Asmat Bismam")
-        indo = st.text_input("Arti dalam Indonesia")
+    st.subheader("Kontribusi Kosa Kata Baru")
+    with st.form("form_setor", clear_on_submit=True):
+        nama = st.text_input("Nama Penyumbang")
+        kata_asmat = st.text_input("Kata dalam Bahasa Asmat")
+        arti_indo = st.text_input("Arti dalam Bahasa Indonesia")
+        contoh = st.text_area("Contoh Kalimat (Opsional)")
+        
         submit = st.form_submit_button("Kirim ke Tim Tata Bahasa")
         
         if submit:
-            data = {"kata_asmat": asmat, "arti_indonesia": indo, "kontributor_nama": nama, "peran_pengisi": peran, "status_verifikasi": "Pending"}
-            supabase.table("kamus_bismam").insert(data).execute()
-            st.success(f"Terima kasih {nama}! Data sedang diproses.")
+            if kata_asmat and arti_indo:
+                data = {
+                    "nama_penyumbang": nama,
+                    "kata_asmat": kata_asmat,
+                    "arti_indonesia": arti_indo,
+                    "contoh_kalimat": contoh,
+                    "status_verifikasi": "Pending"
+                }
+                supabase.table("kamus_bismam").insert(data).execute()
+                st.success(f"Terima kasih {nama}! Data sedang diproses untuk verifikasi.")
+            else:
+                st.error("Mohon isi kata Asmat dan artinya.")
 
 # --- MENU 3: VERIFIKASI ADMIN ---
 elif menu == "🛡️ Verifikasi Admin":
     st.subheader("Panel Verifikasi Tim Tata Bahasa")
     password = st.text_input("Masukkan Kode Akses Admin", type="password")
     
-    if password == "Bismam2026":# Ganti password ini sesuai keinginanmu
+    if password == "Bismam2026":
         # --- TOMBOL DOWNLOAD DATABASE UNTUK ADMIN ---
         st.info("📊 Panel Download Database")
         all_data = supabase.table("kamus_bismam").select("*").execute()
@@ -97,6 +105,7 @@ elif menu == "🛡️ Verifikasi Admin":
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         st.divider()
+        
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").execute()
         if res.data:
             for item in res.data:
@@ -106,37 +115,4 @@ elif menu == "🛡️ Verifikasi Admin":
                         supabase.table("kamus_bismam").update({"arti_indonesia": new_indo, "status_verifikasi": "Verified"}).eq("id", item['id']).execute()
                         st.rerun()
         else:
-            st.write("Semua data sudah diverifikasi.")
-            # --- LANJUTAN DI BAWAH KODE PENCARIAN ---
-        if res.data:
-            df_download = pd.DataFrame(res.data)
-            
-            st.divider()
-            st.subheader("📥 Download Hasil")
-            
-            # Fungsi PDF
-            def buat_pdf(data):
-                buf = io.BytesIO()
-                c = canvas.Canvas(buf, pagesize=letter)
-                c.setFont("Helvetica-Bold", 16)
-                c.drawString(100, 750, "Kamus Asmat Rumpun Bismam")
-                y = 720
-                c.setFont("Helvetica", 12)
-                for item in data:
-                    c.drawString(100, y, f"- {item['kata_asmat']}: {item['arti_indonesia']}")
-                    y -= 20
-                c.save()
-                return buf.getvalue()
-
-            # Fungsi Excel
-            def buat_excel(df):
-                buf = io.BytesIO()
-                with pd.ExcelWriter(buf, engine='openpyxl') as writer:
-                    df.to_excel(writer, index=False)
-                return buf.getvalue()
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.download_button("📊 Download Excel", data=buat_excel(df_download), file_name="Kamus_Asmat.xlsx")
-            with col2:
-                st.download_button("📄 Download PDF", data=buat_pdf(res.data), file_name="Kamus_Asmat.pdf")
+            st.info("Semua data sudah diverifikasi.")
