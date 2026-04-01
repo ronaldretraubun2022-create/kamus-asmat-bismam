@@ -9,21 +9,27 @@ SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- TAMPILAN HEADER ---
-st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
-# --- SEMBUNYIKAN FOOTER & TOMBOL GITHUB ---
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            [data-testid="stStatusWidget"] {display: none !important;}
-            .viewerBadge_container__1QS1n {display: none !important;}
-            .stAppDeployButton {display: none !important;}
-            [data-testid="stToolbar"] {display: none !important;}
-            [data-testid="stDecoration"] {display: none !important;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# --- KODE PEMBERSIH TOTAL (PASTI HILANG) ---
+st.markdown("""
+    <style>
+    /* 1. Hilangkan Menu & Header Atas */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    .stAppDeployButton {display: none !important;}
+
+    /* 2. Hilangkan Footer & Watermark Bawah */
+    footer {visibility: hidden;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+
+    /* 3. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
+    .viewerBadge_container__1QS1n {display: none !important;}
+    .viewerBadge_link__1QS1n {display: none !important;}
+    [data-testid="stToolbar"] {display: none !important;}
+    
+    /* 4. Hilangkan garis dekorasi warna-warni */
+    [data-testid="stDecoration"] {display: none !important;}
+    </style>
+""", unsafe_allow_html=True)
 
 # --- TAMPILAN HEADER DENGAN LOGO ---
 col1, col2, col3 = st.columns([1, 1, 1])
