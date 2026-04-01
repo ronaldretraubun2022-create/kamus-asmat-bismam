@@ -10,7 +10,18 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- TAMPILAN HEADER ---
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
-# --- TAMPILAN HEADER DENGAN LOGO ---
+# --- SEMBUNYIKAN FOOTER & TOMBOL GITHUB ---
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            [data-testid="stStatusWidget"] {visibility: hidden;}
+            .viewerBadge_container__1QS1n {display: none !important;}
+            .stAppDeployButton {display: none !important;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # Menggunakan gambar perisai Asmat sebagai identitas budaya
