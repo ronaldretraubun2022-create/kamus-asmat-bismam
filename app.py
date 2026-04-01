@@ -29,7 +29,7 @@ if menu == "🔍 Cari Kata":
                 st.write(f"*Contoh: {item['contoh_kalimat']}*")
             # --- LANJUTAN DI BAWAH HASIL CARI ---
             st.divider()
-             df_export = pd.DataFrame(res.data)
+            df_export = pd.DataFrame(res.data)
             
             # Buat file Excel di memori
             output = io.BytesIO()
