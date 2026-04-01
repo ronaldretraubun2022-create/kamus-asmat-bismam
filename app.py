@@ -59,3 +59,36 @@ elif menu == "🛡️ Verifikasi Admin":
                         st.rerun()
         else:
             st.write("Semua data sudah diverifikasi.")
+            # --- LANJUTAN DI BAWAH KODE PENCARIAN ---
+        if res.data:
+            df_download = pd.DataFrame(res.data)
+            
+            st.divider()
+            st.subheader("📥 Download Hasil")
+            
+            # Fungsi PDF
+            def buat_pdf(data):
+                buf = io.BytesIO()
+                c = canvas.Canvas(buf, pagesize=letter)
+                c.setFont("Helvetica-Bold", 16)
+                c.drawString(100, 750, "Kamus Asmat Rumpun Bismam")
+                y = 720
+                c.setFont("Helvetica", 12)
+                for item in data:
+                    c.drawString(100, y, f"- {item['kata_asmat']}: {item['arti_indonesia']}")
+                    y -= 20
+                c.save()
+                return buf.getvalue()
+
+            # Fungsi Excel
+            def buat_excel(df):
+                buf = io.BytesIO()
+                with pd.ExcelWriter(buf, engine='openpyxl') as writer:
+                    df.to_excel(writer, index=False)
+                return buf.getvalue()
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.download_button("📊 Download Excel", data=buat_excel(df_download), file_name="Kamus_Asmat.xlsx")
+            with col2:
+                st.download_button("📄 Download PDF", data=buat_pdf(res.data), file_name="Kamus_Asmat.pdf")
