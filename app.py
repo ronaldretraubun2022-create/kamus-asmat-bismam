@@ -28,20 +28,20 @@ if menu == "🔍 Cari Kata":
                 st.success(f"**{item['kata_asmat']}** = {item['arti_indonesia']}")
                 st.write(f"*Contoh: {item['contoh_kalimat']}*")
             # --- LANJUTAN DI BAWAH HASIL CARI ---
-            st.divider()
-            df_export = pd.DataFrame(res.data)
-            
-            # Buat file Excel di memori
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                st.divider()
+                df_export = pd.DataFrame(res.data)
+                    
+                    # Buat file Excel di memori
+                output = io.BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
                 df_export.to_excel(writer, index=False)
-            
-            st.download_button(
-                label="📊 Download Kamus (Excel)",
-                data=output.getvalue(),
-                file_name="Kamus_Asmat_Bismam.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )    
+                    
+                st.download_button(
+                        label="📊 Download Kamus (Excel)",
+                        data=output.getvalue(),
+                        file_name="Kamus_Asmat_Bismam.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )    
         else:
             st.info("Kata belum ditemukan atau masih menunggu verifikasi.")
 
