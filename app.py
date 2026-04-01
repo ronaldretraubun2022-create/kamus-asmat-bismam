@@ -11,30 +11,22 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # --- TAMPILAN HEADER ---
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
 # --- SEMBUNYIKAN FOOTER & TOMBOL GITHUB ---
-# --- KODE PENGHILANG SEMUA TOMBOL (GITHUB & STREAMLIT) ---
-# --- KODE PEMBERSIH TOTAL (GITHUB & STREAMLIT) ---
-st.markdown(
-    """
-    <style>
-    /* Menghilangkan seluruh area header dan footer secara paksa */
-    header, footer, .stDeployButton, #MainMenu, .viewerBadge_link__1QS1n, .viewerBadge_container__1QS1n {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    /* Menghilangkan toolbar pojok kanan bawah di HP */
-    [data-testid="stToolbar"] {
-        display: none !important;
-    }
-    /* Menghilangkan garis warna-warni di paling atas */
-    [data-testid="stDecoration"] {
-        display: none !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            [data-testid="stStatusWidget"] {display: none !important;}
+            .viewerBadge_container__1QS1n {display: none !important;}
+            .stAppDeployButton {display: none !important;}
+            [data-testid="stToolbar"] {display: none !important;}
+            [data-testid="stDecoration"] {display: none !important;}
+            </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# --- TAMPILAN HEADER DENGAN LOGO ---
+col1, col2, col3 = st.columns([1, 1, 1])
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # Menggunakan gambar perisai Asmat sebagai identitas budaya
