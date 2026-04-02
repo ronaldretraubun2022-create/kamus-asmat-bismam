@@ -73,18 +73,19 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. DATA KOSA KATA (UPDATE LENGKAP) ---
+# --- 4. DATA KOSA KATA LENGKAP (SESUAI INPUT ANDA) ---
 DAFTAR_KATA = {
     "🦴 Anatomi: Bagian Luar": [
         "Kepala", "Rambut", "Dahi", "Mata", "Alis", "Bulu mata", "Hidung", "Pipi", "Mulut", "Bibir", 
         "Gigi", "Lidah", "Telinga", "Dagu", "Leher", "Bahu", "Dada", "Perut", "Punggung", "Pinggang", 
         "Lengan", "Siku", "Tangan", "Jari tangan", "Kuku", "Paha", "Lutut", "Betis", "Kaki", "Tumit", "Jari kaki"
     ],
-    "🫀 Anatomi: Organ & Sistem": [
+    "🫀 Anatomi: Dalam & Sistem": [
         "Otak", "Jantung", "Paru-paru", "Hati", "Lambung", "Usus", "Ginjal", "Pankreas", "Limpa", "Kandung kemih",
-        "Darah", "Arteri", "Vena", "Tulang", "Sendi", "Otot", "Saraf", "Sel", "Jaringan", "Hormon"
+        "Darah", "Arteri", "Vena", "Kapiler", "Denyut nadi", "Tulang", "Sendi", "Otot", "Ligamen", "Tendon", 
+        "Saraf", "Sumsum tulang belakang", "Sel", "Jaringan", "Organ", "Sistem tubuh", "Hormon", "Enzim"
     ],
-    "🍳 Alat Masak & Dapur": [
+    "🍳 Alat Masak": [
         "Kompor", "Wajan", "Panci", "Dandang", "Teko", "Oven", "Microwave", "Rice cooker", "Pemanggang (grill)", "Kukusan",
         "Pisau dapur", "Talenan", "Parutan", "Blender", "Cobek", "Ulekan", "Saringan", "Pengupas (peeler)", "Gunting dapur"
     ],
@@ -92,36 +93,32 @@ DAFTAR_KATA = {
         "Piring", "Mangkok", "Sendok", "Garpu", "Pisau makan", "Gelas", "Cangkir", "Sumpit", "Sedotan",
         "Lemari dapur", "Rak piring", "Toples", "Botol", "Kaleng", "Kotak makanan", "Kulkas", "Freezer", "Wadah plastik"
     ],
-    "🧼 Peralatan Tambahan Dapur": [
+    "🧼 Perabot & Tambahan Dapur": [
         "Lap dapur", "Spons", "Sabun cuci piring", "Ember", "Tempat sampah", "Sarung tangan dapur", 
         "Penjepit makanan", "Sendok sayur", "Spatula", "Meja dapur", "Kursi", "Wastafel", "Keran air", "Rak bumbu"
     ],
-    "🧂 Bumbu & Bahan Dasar": [
-        "Garam", "Gula", "Minyak goreng", "Kecap", "Saus", "Merica", "Bawang merah", "Bawang putih", "Cabai"
-    ],
-    "🥣 Makanan Khas & Sagu": [
+    "🧂 Bumbu & Protein Sagu": [
+        "Garam", "Gula", "Minyak goreng", "Kecap", "Saus", "Merica", "Bawang merah", "Bawang putih", "Cabai",
         "Sagu", "Papeda", "Sagu bakar", "Sagu lempeng", "Sagu bola-bola", "Sagu campur ikan", "Sagu kuah kuning",
         "Ulat sagu", "Ikan bakar", "Ikan asap", "Ikan kuah kuning", "Udang sungai", "Kepiting rawa", "Kerang sungai", 
-        "Kura-kura", "Babi bakar", "Ulat sagu bakar", "Ulat sagu goreng", "Sate ulat sagu"
+        "Kura-kura", "Babi bakar", "Ulat sagu bakar", "Ulat sagu goreng", "Sate ulat sagu", "Ikan bakar batu"
     ],
-    "🏹 Budaya & Seni Asmat": [
+    "🏹 Budaya & Ritual Asmat": [
         "Upacara adat", "Ritual leluhur", "Pesta adat", "Tarian adat", "Nyanyian adat", "Persembahan", 
-        "Inisiasi (pendewasaan)", "Penghormatan leluhur", "Ukiran kayu", "Patung Asmat", "Perisai ukir", 
-        "Topeng adat", "Hiasan tubuh", "Anyaman", "Seni pahat", "Jew (Rumah Adat)", "Tifa", "Noken"
+        "Inisiasi (pendewasaan)", "Penghormatan leluhur", "Pembukaan lahan adat", "Upacara kematian",
+        "Ukiran kayu", "Patung Asmat", "Perisai ukir", "Topeng adat", "Hiasan tubuh", "Anyaman", 
+        "Jew (Rumah adat)", "Tifa", "Noken", "Tombak", "Panah", "Busur", "Perahu kano"
     ],
-    "🌲 Aktivitas & Sosial": [
-        "Berburu", "Menangkap ikan", "Meramu", "Mengolah sagu", "Membuat perahu", "Mendayung", 
-        "Mengumpulkan kayu bakar", "Gotong royong", "Musyawarah adat", "Cerita lisan", "Pewarisan budaya"
-    ],
-    "🐾 Hewan Darat & Udara": [
+    "🐾 Hewan (Darat & Khas Papua)": [
         "Anjing", "Kucing", "Babi", "Kambing", "Sapi", "Kuda", "Tikus", "Kelelawar", "Kanguru pohon", 
-        "Kasuari", "Rusa", "Babi hutan", "Ayam", "Bebek", "Burung nuri", "Burung cenderawasih", "Burung elang"
+        "Kasuari", "Rusa", "Babi hutan", "Kuskus", "Walabi", "Burung nuri", "Burung cenderawasih", "Burung elang"
     ],
-    "🐊 Hewan Air & Reptil": [
+    "🐊 Hewan (Air, Melata, Serangga)": [
         "Ikan", "Udang", "Kepiting", "Kerang", "Buaya", "Belut", "Ikan gabus", "Ikan arwana", 
-        "Ular", "Kadal", "Biawak", "Penyu", "Kura-kura", "Katak"
+        "Ular", "Kadal", "Biawak", "Penyu", "Kura-kura", "Katak", "Kodok",
+        "Semut", "Nyamuk", "Lalat", "Kupu-kupu", "Lebah", "Belalang", "Kumbang", "Rayap"
     ],
-    "✨ Lainnya": []
+    "✨ Kategori Lainnya": []
 }
 
 # --- 5. SIDEBAR: GOOGLE TRANSLATE ---
@@ -173,37 +170,35 @@ with tab_cari:
                 """, unsafe_allow_html=True)
         else:
             st.warning("Kata belum ditemukan atau belum diverifikasi.")
-    
-    total_res = supabase.table("kamus_bismam").select("id", count="exact").eq("status_verifikasi", "Verified").execute()
-    if total_res.count:
-        st.markdown(f"<p style='text-align: center; font-size: 12px; opacity: 0.7;'>Total: {total_res.count} kosakata terverifikasi</p>", unsafe_allow_html=True)
 
-# --- TAB 2: KONTRIBUSI ---
+# --- TAB 2: KONTRIBUSI (DINAMIS & LENGKAP) ---
 with tab_kontribusi:
     st.subheader("📝 Sumbangkan Kata Baru")
-    st.write("Pilih kata Bahasa Indonesia, lalu isi terjemahan Bahasa Asmat-nya.")
+    st.write("Pilih kategori dan kata Indonesia, lalu isi padanan Bahasa Asmat-nya.")
+    
+    # Letakkan di luar form agar selectbox kedua bisa merespon selectbox pertama
+    kat_pilihan = st.selectbox("1. Pilih Kategori:", list(DAFTAR_KATA.keys()))
     
     with st.form("form_kontribusi", clear_on_submit=True):
-        kat_pilihan = st.selectbox("Pilih Kategori:", list(DAFTAR_KATA.keys()))
-        
-        if kat_pilihan == "✨ Lainnya":
-            kata_indo_pilihan = st.text_input("Ketik Kata Bahasa Indonesia Baru:")
+        if kat_pilihan == "✨ Kategori Lainnya":
+            kata_indo_final = st.text_input("2. Ketik Kata Bahasa Indonesia Baru:")
         else:
-            kata_indo_pilihan = st.selectbox("Pilih Kata Bahasa Indonesia:", DAFTAR_KATA[kat_pilihan])
+            # Dropdown ini sekarang otomatis terupdate sesuai kategori di atas
+            kata_indo_final = st.selectbox("2. Pilih Kata Bahasa Indonesia:", DAFTAR_KATA[kat_pilihan])
         
-        kata_asmat = st.text_input("Tuliskan Bahasa Asmat Rumpun Bismam-nya:")
+        kata_asmat = st.text_input("3. Tuliskan Bahasa Asmat Rumpun Bismam-nya:")
         nama_p = st.text_input("Nama Penyumbang (Opsional)")
         
         if st.form_submit_button("KIRIM TERJEMAHAN"):
-            if kata_indo_pilihan and kata_asmat:
+            if kata_indo_final and kata_asmat:
                 supabase.table("kamus_bismam").insert({
-                    "kata_asmat": kata_asmat, "arti_indonesia": kata_indo_pilihan, 
+                    "kata_asmat": kata_asmat, "arti_indonesia": kata_indo_final, 
                     "kategori": kat_pilihan, "nama_penyumbang": nama_p if nama_p else "Anonim",
                     "status_verifikasi": "Pending"
                 }).execute()
-                st.success(f"Terima kasih! Terjemahan '{kata_indo_pilihan}' telah dikirim.")
+                st.success(f"Terima kasih! Terjemahan untuk '{kata_indo_final}' telah dikirim ke Admin.")
             else:
-                st.error("Mohon isi terjemahan terlebih dahulu.")
+                st.error("Mohon isi terjemahan Bahasa Asmat.")
 
 # --- TAB 3: ADMIN ---
 with tab_admin:
@@ -214,7 +209,6 @@ with tab_admin:
         if res.data:
             for item in res.data:
                 with st.expander(f"📌 {item['kata_asmat']} - {item['arti_indonesia']}"):
-                    st.write(f"Penyumbang: {item.get('nama_penyumbang', 'Anonim')}")
                     c1, c2 = st.columns(2)
                     if c1.button("SETUJUI ✅", key=f"s_{item['id']}"):
                         supabase.table("kamus_bismam").update({"status_verifikasi": "Verified"}).eq("id", item['id']).execute()
@@ -225,4 +219,4 @@ with tab_admin:
         else: st.info("Tidak ada data pending.")
 
 # --- FOOTER ---
-st.markdown("""<div class="footer">© 2026 Kamus Digital Asmat Rumpun Bismam - Kabupaten Asmat, Papua Selatan</div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer">© 2026 Kamus Digital Asmat Rumpun Bismam - Papua Selatan</div>""", unsafe_allow_html=True)
