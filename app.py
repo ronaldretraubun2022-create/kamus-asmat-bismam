@@ -1,163 +1,100 @@
 import streamlit as st
 from supabase import create_client, Client
-import pandas as pd
-import io
 
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
 
-# --- KONEKSI KE DATABASE ---
-SUPABASE_URL = "https://obmomopxcmsgzjjseevh.supabase.co"
-SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# --- KONEKSI KE DATABASE (VERSI AMAN DENGAN SECRETS) ---
+try:
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except:
+    st.error("Gagal memuat kunci keamanan. Pastikan Secrets sudah diatur di Streamlit.")
+    st.stop()
 
-# --- KODE PEMBERSIH TOTAL (GITHUB & STREAMLIT) ---
-st.markdown(
-    """
+# --- KODE PEMBERSIH TAMPILAN (POJOK KANAN BERSIH) ---
+st.markdown("""
     <style>
-    /* 1. Hilangkan Header, Footer, dan Tombol Deploy */
-    header, footer, .stDeployButton, #MainMenu {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* 2. PAKSA HILANGKAN TOMBOL GITHUB & TOOLBAR */
-    div[class^="viewerBadge"],
-    div[class*="viewerBadge"],
-    div[data-testid="stStatusWidget"],
-    div[data-testid="stToolbar"],
-    div[data-testid="stDecoration"],
-    button[title="View source on GitHub"],
-    .stAppToolbar {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-
-    /* 3. Rapikan margin bawah agar bersih */
-    .stApp {
-        margin-bottom: -60px !important;
-        padding-bottom: 0px !important;
-    }
-    
-    /* 4. Khusus untuk tampilan Mobile/HP */
-    @media screen and (max-width: 768px) {
-        div[class^="viewerBadge"] {
-            display: none !important;
-        }
-    }
+    header, footer, .stDeployButton, #MainMenu { display: none !important; visibility: hidden !important; }
+    .stApp { margin-bottom: -60px !important; padding-bottom: 0px !important; background-color: #FFFDF9; }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    """, unsafe_allow_html=True)
 
-# --- TAMPILAN HEADER DENGAN LOGO ---
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    # Menampilkan logo Museum Asmat
-    try:
-        st.image("MUSEUM ASMAT.png", width=150)
-    except:
-        pass
+# --- DAFTAR KATA UMUM (OTOMATIS) ---
+DAFTAR_KATA = {
+    "🦴 Anatomi Tubuh": ["Kepala", "Rambut", "Mata", "Telinga", "Hidung", "Mulut", "Tangan", "Kaki", "Jantung", "Darah"],
+    "👨‍👩‍👧‍👦 Panggilan Keluarga": ["Bapak/Ayah", "Ibu/Mama", "Kakak Laki-laki", "Kakak Perempuan", "Adik", "Kakek", "Nenek", "Paman", "Bibi", "Sepupu"],
+    "🍳 Peralatan Dapur": ["Parang", "Kapak", "Periuk", "Piring", "Sendok", "Kayu Bakar", "Api", "Air Minum", "Tungku"],
+    "🍲 Makanan & Alam": ["Sagu", "Ikan", "Ulat Sagu", "Babi Hutan", "Burung", "Hutan", "Sungai", "Dusun", "Perahu", "Dayung"],
+    "🚲 Kendaraan": ["Perahu (Kole-kole)", "Perahu Motor (Longboat)", "Kapal", "Speedboat", "Motor", "Sepeda Listrik", "Pesawat Capung"],
+    "🐾 Hewan Papua": ["Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Walabi", "Kuskus", "Buaya", "Ular Piton", "Ikan Arwana", "Rusa"]
+}
 
-st.markdown("<h1 style='text-align: center; color: #8B4513; margin-bottom: 0;'>🏹 KAMUS BAHASA ASMAT</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #5D4037; font-weight: bold; font-size: 20px;'>RUMPUN BISMAM</p>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6F4E37; font-style: italic;'>Melestarikan Budaya Lewat Bahasa - Papua Selatan</p>", unsafe_allow_html=True)
+# --- HEADER ---
+st.markdown("<h1 style='text-align: center; color: #8B4513;'>🏹 KAMUS ASMAT BISMAM</h1>", unsafe_allow_html=True)
 st.divider()
 
-# Menu Samping
-menu = st.sidebar.radio("Pilih Menu:", ["🔍 Cari Kata", "📝 Setor Kata (Murid/Guru)", "🛡️ Verifikasi Admin"])
+# --- MENU SAMPING ---
+menu = st.sidebar.radio("Pilih Menu:", ["🔍 Cari Kata", "📝 Kontribusi Kata", "🛡️ Admin"])
 
 # --- MENU 1: CARI KATA ---
 if menu == "🔍 Cari Kata":
     st.subheader("Cari Kosakata")
-    search = st.text_input("Ketik kata dalam Asmat atau Indonesia...")
+    search = st.text_input("Ketik kata Indonesia atau Asmat...")
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
         if res.data:
             for item in res.data:
-                st.markdown(f"""
-                <div style="
-                    border: 1px solid #EADDCA; 
-                    border-left: 8px solid #8B4513; 
-                    padding: 20px; 
-                    border-radius: 15px; 
-                    background-color: #FFFDF9; 
-                    margin-bottom: 15px; 
-                    box-shadow: 2px 4px 8px rgba(0,0,0,0.05);">
-                    <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
-                    <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
-                    <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
-                        <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
-                        <b>{item['arti_indonesia']}</b>
-                    </p>
-                    <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px solid #6F4E37;">
-                        <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
-                            "Contoh: {item.get('contoh_kalimat', '-')}"
-                        </p>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.success(f"**{item['kata_asmat']}** = {item['arti_indonesia']}")
         else:
-            st.info("Kata belum ditemukan atau masih menunggu verifikasi.")
+            st.info("Kata belum ditemukan.")
 
-# --- MENU 2: SETOR KATA ---
-elif menu == "📝 Setor Kata (Murid/Guru)":
-    st.subheader("Kontribusi Kosa Kata Baru")
-    with st.form("form_setor", clear_on_submit=True):
-        nama = st.text_input("Nama Penyumbang")
-        kata_asmat = st.text_input("Kata dalam Bahasa Asmat")
-        arti_indo = st.text_input("Arti dalam Bahasa Indonesia")
-        contoh = st.text_area("Contoh Kalimat (Opsional)")
-        
-        submit = st.form_submit_button("Kirim ke Tim Tata Bahasa")
-        
-        if submit:
-            if kata_asmat and arti_indo:
-                data = {
-                    "nama_penyumbang": nama,
-                    "kata_asmat": kata_asmat,
-                    "arti_indonesia": arti_indo,
-                    "contoh_kalimat": contoh,
-                    "status_verifikasi": "Pending"
-                }
-                supabase.table("kamus_bismam").insert(data).execute()
-                st.success(f"Terima kasih {nama}! Data sedang diproses untuk verifikasi.")
-            else:
-                st.error("Mohon isi kata Asmat dan artinya.")
-
-# --- MENU 3: VERIFIKASI ADMIN ---
-elif menu == "🛡️ Verifikasi Admin":
-    st.subheader("Panel Verifikasi Tim Tata Bahasa")
-    password = st.text_input("Masukkan Kode Akses Admin", type="password")
+# --- MENU 2: KONTRIBUSI (TERMASUK AUDIO) ---
+elif menu == "📝 Kontribusi Kata":
+    st.subheader("Bantu Terjemahkan Kata")
+    metode = st.radio("Pilih Cara Kontribusi:", ["⌨️ Teks (Menulis)", "🎙️ Audio (Bicara/Rekam)"])
     
-    if password == "Bismam2026":
-        st.info("📊 Panel Download Database")
-        all_data = supabase.table("kamus_bismam").select("*").execute()
-        if all_data.data:
-            df_admin = pd.DataFrame(all_data.data)
-            output_admin = io.BytesIO()
-            with pd.ExcelWriter(output_admin, engine='openpyxl') as writer:
-                df_admin.to_excel(writer, index=False)
-            
-            st.download_button(
-                label="📥 Download Database Lengkap (Excel)",
-                data=output_admin.getvalue(),
-                file_name="Kamus_Asmat_Bismam_Lengkap.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-        st.divider()
-        
+    if metode == "⌨️ Teks (Menulis)":
+        kat_pilihan = st.selectbox("Pilih Kategori:", list(DAFTAR_KATA.keys()) + ["✨ Lainnya"])
+        kata_indo = ""
+        if kat_pilihan == "✨ Lainnya":
+            kata_indo = st.text_input("Ketik Kata Bahasa Indonesia:")
+        else:
+            opsi = st.radio("Pilihan Kata:", ["Dari Daftar", "Ketik Baru"])
+            if opsi == "Dari Daftar":
+                kata_indo = st.selectbox("Pilih Kata:", DAFTAR_KATA[kat_pilihan])
+            else:
+                kata_indo = st.text_input("Ketik Kata Indonesia Baru:")
+
+        with st.form("form_teks"):
+            nama = st.text_input("Nama Penyumbang")
+            kata_asmat = st.text_input(f"Bahasa Asmat dari '{kata_indo}'")
+            if st.form_submit_button("Kirim Teks"):
+                if kata_asmat:
+                    data = {"nama_penyumbang": nama, "kata_asmat": kata_asmat, "arti_indonesia": kata_indo, "kategori": kat_pilihan, "status_verifikasi": "Pending"}
+                    supabase.table("kamus_bismam").insert(data).execute()
+                    st.success("Terima kasih! Data sudah terkirim ke Admin.")
+
+    else:
+        st.info("Bapak/Ibu silakan bicara, sebutkan kata Indonesia dan bahasa Asmat-nya.")
+        audio_file = st.audio_input("Rekam Suara")
+        if audio_file:
+            st.audio(audio_file)
+            nama_audio = st.text_input("Nama Penyumbang")
+            if st.button("Kirim Rekaman"):
+                st.success(f"Terima kasih {nama_audio}! Rekaman diterima. Admin akan mengetikkannya untuk Anda.")
+
+# --- MENU 3: ADMIN ---
+elif menu == "🛡️ Admin":
+    pwd = st.text_input("Password Admin", type="password")
+    if pwd == st.secrets.get("ADMIN_PASSWORD", "Bismam2026"):
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").execute()
         if res.data:
             for item in res.data:
-                with st.expander(f"Cek: {item['kata_asmat']}"):
-                    new_indo = st.text_input("Koreksi Arti", value=item['arti_indonesia'], key=f"id_{item['id']}")
-                    if st.button("Verifikasi & Terbitkan", key=f"btn_{item['id']}"):
-                        supabase.table("kamus_bismam").update({"arti_indonesia": new_indo, "status_verifikasi": "Verified"}).eq("id", item['id']).execute()
+                with st.expander(f"Verifikasi: {item['kata_asmat']}"):
+                    if st.button("Setujui", key=f"v_{item['id']}"):
+                        supabase.table("kamus_bismam").update({"status_verifikasi": "Verified"}).eq("id", item['id']).execute()
                         st.rerun()
         else:
-            st.info("Semua data sudah diverifikasi.")
+            st.write("Tidak ada antrean verifikasi.")
