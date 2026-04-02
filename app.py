@@ -13,23 +13,46 @@ except:
     st.error("Konfigurasi Secrets belum lengkap di Streamlit Cloud.")
     st.stop()
 
-# --- 3. FIX TAMPILAN: PAKSA TERANG & BERSIH ---
+# --- 3. KODE WARNA ETNIK (COKELAT & KREM) ---
 st.markdown("""
     <style>
     /* Hilangkan elemen bawaan Streamlit */
     header, footer, .stDeployButton, #MainMenu { display: none !important; }
     
-    /* Paksa Latar Belakang Putih & Teks Gelap agar Terbaca */
-    .stApp { background-color: #FFFFFF !important; }
-    p, span, label, h1, h2, h3 { color: #2E1A08 !important; font-family: 'sans-serif'; }
-    
-    /* Percantik Box Input */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-        background-color: #F8F9FA !important;
-        color: #2E1A08 !important;
-        border: 1px solid #D2B48C !important;
+    /* Latar Belakang Krem (Warna Kulit Kayu Terang) */
+    .stApp { 
+        background-color: #FFFDF9 !important; 
     }
     
+    /* Warna Teks Utama (Cokelat Tua) */
+    p, span, label, h1, h2, h3 { 
+        color: #5D4037 !important; 
+    }
+    
+    /* Styling Sidebar (Warna Gelap Etnik) */
+    [data-testid="stSidebar"] {
+        background-color: #2E1A08 !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #EADDCA !important;
+    }
+
+    /* Styling Box Input & Selectbox */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        background-color: #FFFFFF !important;
+        color: #5D4037 !important;
+        border: 2px solid #8B4513 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Tombol-tombol Warna Kayu */
+    .stButton>button {
+        background-color: #8B4513 !important;
+        color: white !important;
+        border-radius: 20px !important;
+        border: none !important;
+    }
+
     /* Hilangkan ruang kosong bawah */
     .stApp { margin-bottom: -50px !important; padding-bottom: 0px !important; }
     </style>
@@ -45,14 +68,14 @@ DAFTAR_KATA = {
     "🐾 Hewan Papua": ["Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Walabi", "Kuskus", "Buaya", "Ular", "Rusa"]
 }
 
-# --- 5. HEADER ETNIK ---
+# --- 5. HEADER ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     try: st.image("MUSEUM ASMAT.png", width=150)
     except: st.markdown("<h2 style='text-align:center;'>🏹</h2>", unsafe_allow_html=True)
 
 st.markdown("<h1 style='text-align: center; color: #8B4513; margin-top: -20px;'>KAMUS ASMAT BISMAM</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-style: italic;'>Melestarikan Budaya Lewat Bahasa</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-style: italic; color: #6F4E37;'>Melestarikan Budaya Lewat Bahasa - Papua Selatan</p>", unsafe_allow_html=True)
 st.divider()
 
 # --- 6. NAVIGASI MENU ---
@@ -60,19 +83,25 @@ menu = st.sidebar.radio("PILIH MENU:", ["🔍 Cari Kata", "📝 Kontribusi Kata"
 
 # --- MENU 1: CARI KATA ---
 if menu == "🔍 Cari Kata":
-    st.subheader("Cari Kosakata")
+    st.subheader("🔍 Cari Kosakata")
     search = st.text_input("Ketik kata Indonesia atau Asmat...")
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
         if res.data:
             for item in res.data:
-                st.info(f"**{item['kata_asmat']}** = {item['arti_indonesia']}")
+                # Tampilan Box Hasil yang Etnik
+                st.markdown(f"""
+                <div style="background-color: #F5F5DC; border-left: 10px solid #8B4513; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                    <h3 style="margin:0; color: #8B4513;">{item['kata_asmat']}</h3>
+                    <p style="margin:0; color: #5D4037;">Artinya: <b>{item['arti_indonesia']}</b></p>
+                </div>
+                """, unsafe_allow_html=True)
         else:
             st.warning("Kata belum ditemukan dalam database.")
 
-# --- MENU 2: KONTRIBUSI (TEKS & AUDIO) ---
+# --- MENU 2: KONTRIBUSI ---
 elif menu == "📝 Kontribusi Kata":
-    st.subheader("Sumbangkan Kata Baru")
+    st.subheader("📝 Sumbangkan Kata Baru")
     metode = st.radio("Metode Kontribusi:", ["⌨️ Teks (Menulis)", "🎙️ Audio (Bicara)"])
     
     if metode == "⌨️ Teks (Menulis)":
@@ -82,7 +111,10 @@ elif menu == "📝 Kontribusi Kata":
             kata_indo = st.text_input("Ketik Kata Bahasa Indonesia:")
         else:
             opsi = st.radio("Pilihan Kata:", ["Dari Daftar", "Ketik Baru"])
-            kata_indo = st.selectbox("Pilih Kata:", DAFTAR_KATA[kat]) if opsi == "Dari Daftar" else st.text_input("Ketik Kata Indonesia Baru:")
+            if opsi == "Dari Daftar":
+                kata_indo = st.selectbox("Pilih Kata:", DAFTAR_KATA[kat])
+            else:
+                kata_indo = st.text_input("Ketik Kata Indonesia Baru:")
 
         with st.form("form_kontribusi"):
             nama = st.text_input("Nama Anda")
@@ -113,4 +145,4 @@ elif menu == "🛡️ Admin":
                         supabase.table("kamus_bismam").update({"status_verifikasi": "Verified"}).eq("id", item['id']).execute()
                         st.rerun()
         else:
-            st.write("Semua data sudah bersih (terverifikasi).")
+            st.write("Semua data sudah terverifikasi.")
