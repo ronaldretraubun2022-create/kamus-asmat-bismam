@@ -1,5 +1,6 @@
 import streamlit as st
 from supabase import create_client, Client
+import requests
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
@@ -30,6 +31,7 @@ st.markdown("""
         color: white !important;
         border-radius: 20px !important;
         border: none !important;
+        width: 100%;
     }
     .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         border: 2px solid #8B4513 !important;
@@ -43,28 +45,49 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. DATA KOSA KATA ---
+# --- 4. DATA KOSA KATA (CONTOH DARI KODE ASLI ANDA) ---
 DAFTAR_KATA = {
-    "🦴 Anatomi": ["Kepala", "Rambut", "Mata", "Hidung", "Telinga", "Mulut", "Tangan", "Kaki"],
-    "🍳 Alat Masak": ["Wajan", "Panci", "Pisau", "Teko", "Saringan"],
-    "🧂 Bumbu & Protein": ["Sagu", "Papeda", "Ikan", "Udang", "Garam", "Gula"],
-    "🏹 Budaya & Ritual": ["Tifa", "Noken", "Jew", "Ukiran", "Perahu"],
+    "🦴 Anatomi: Bagian Luar": ["Kepala", "Rambut", "Dahi", "Mata", "Hidung"],
+    "🫀 Anatomi: Dalam & Sistem": ["Otak", "Jantung", "Paru-paru", "Hati"],
+    "🍳 Alat Masak": ["Kompor", "Wajan", "Panci", "Dandang"],
+    "🍽️ Alat Makan & Wadah": ["Piring", "Mangkok", "Sendok", "Gelas"],
+    "🧂 Bumbu & Protein Sagu": ["Garam", "Gula", "Minyak goreng", "Sagu", "Papeda"],
+    "🏹 Budaya & Ritual Asmat": ["Upacara adat", "Ritual leluhur", "Pesta adat", "Ukiran kayu", "Tifa", "Noken"],
+    "🐾 Hewan (Darat & Papua)": ["Anjing", "Babi", "Kasuari", "Rusa", "Burung nuri", "Burung cenderawasih"],
     "✨ Kategori Lainnya": []
 }
 
-# --- 5. SIDEBAR ---
+# --- 5. SIDEBAR: GOOGLE TRANSLATE ---
 with st.sidebar:
-    st.markdown("### 🌐 Navigasi")
-    st.info("Fokus: Pelestarian Bahasa Asmat Rumpun Bismam.")
+    st.markdown("### 🌐 Translation")
+    st.components.v1.html("""
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'id', includedLanguages: 'en,id', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    """, height=100)
     st.divider()
+    st.info("Fokus: Pelestarian Bahasa Asmat Rumpun Bismam.")
 
-# --- 6. HEADER ---
-st.markdown("<h2 style='text-align: center; color: #8B4513; font-weight: bold;'>KAMUS DIGITAL BAHASA ASMAT<br>RUMPUN BISMAM</h2>", unsafe_allow_html=True)
+# --- 6. HEADER (KEMBALIKAN LOGO MUSEUM) ---
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    try: 
+        # PERBAIKAN: Menampilkan logo museum kembali
+        st.image("MUSEUM ASMAT.png", width=150)
+    except: 
+        # Cadangan jika file gambar tidak ditemukan
+        st.markdown("<h1 style='text-align: center;'>🏹</h1>", unsafe_allow_html=True)
+
+st.markdown("<h2 style='text-align: center; color: #8B4513; margin-top: -20px; font-weight: bold;'>KAMUS DIGITAL BAHASA ASMAT<br>RUMPUN BISMAM</h2>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-style: italic; color: #6F4E37;'>Melestarikan Budaya Lewat Bahasa - Papua Selatan</p>", unsafe_allow_html=True)
 st.divider()
 
 # --- 7. NAVIGASI TABS ---
-tab_cari, tab_kontribusi, tab_admin = st.tabs(["🔍 CARI KATA", "📝 KONTRIBUSI", "🛡️ ADMIN"])
+tab_cari, tab_kontribusi, tab_admin = st.tabs(["🔍 CARI KATA", "📝 KONTRIBUSI", "🛡️ PANEL ADMIN"])
 
 # --- TAB 1: CARI KATA ---
 with tab_cari:
@@ -82,7 +105,7 @@ with tab_cari:
                 """, unsafe_allow_html=True)
         else: st.warning("Kata belum ditemukan atau belum diverifikasi.")
 
-# --- TAB 2: KONTRIBUSI (BAGIAN PERBAIKAN UTAMA) ---
+# --- TAB 2: KONTRIBUSI (PERBAIKAN DATABASE + LOGO KEMBALI) ---
 with tab_kontribusi:
     st.subheader("📝 Kontribusi Baru")
     kat_pilihan = st.selectbox("1. Pilih Kategori:", list(DAFTAR_KATA.keys()))
@@ -99,7 +122,7 @@ with tab_kontribusi:
         if st.form_submit_button("KIRIM TERJEMAHAN"):
             if kata_indo_input and kata_asmat_input:
                 try:
-                    # PERBAIKAN: Nama kolom disamakan dengan Supabase (kontributor_name)
+                    # PERBAIKAN UTAMA: Nama kolom disamakan dengan Supabase (kontributor_name)
                     supabase.table("kamus_bismam").insert({
                         "kata_asmat": kata_asmat_input, 
                         "arti_indonesia": kata_indo_input, 
