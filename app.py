@@ -48,7 +48,7 @@ st.markdown("""
 # --- 4. DATA KOSA KATA LENGKAP ---
 DAFTAR_KATA = {
     "🦴 Anatomi: Bagian Luar": ["Kepala", "Rambut", "Dahi", "Mata", "Alis", "Bulu mata", "Hidung", "Pipi", "Mulut", "Bibir", "Gigi", "Lidah", "Telinga", "Dagu", "Leher", "Bahu", "Dada", "Perut", "Punggung", "Pinggang", "Lengan", "Siku", "Tangan", "Jari tangan", "Kuku", "Paha", "Lutut", "Betis", "Kaki", "Tumit", "Jari kaki"],
-    "🫀 Anatomi: Dalam & Sistem": ["Otak", "Jantung", "Paru-paru", "Hati", "Lambung", "Usus", "Ginjal", "Pankreas", "Limpa", "Kandung kemih", "Darah", "Arteri", "Vena", "Capiller", "Denyut nadi", "Tulang", "Sendi", "Otot", "Ligamen", "Tendon", "Saraf", "Sumsum tulang belakang", "Sel", "Jaringan", "Organ", "Sistem tubuh", "Hormon", "Enzim"],
+    "🫀 Anatomi: Dalam & Sistem": ["Otak", "Jantung", "Paru-paru", "Hati", "Lambung", "Usus", "Ginjal", "Pankreas", "Limpa", "Kandung kemih", "Darah", "Arteri", "Vena", "Tulang", "Sendi", "Otot", "Ligamen", "Tendon", "Saraf", "Sumsum tulang belakang", "Sel", "Jaringan", "Organ", "Sistem tubuh", "Hormon", "Enzim"],
     "🍳 Alat Masak": ["Kompor", "Wajan", "Panci", "Dandang", "Teko", "Oven", "Microwave", "Rice cooker", "Pemanggang (grill)", "Kukusan", "Pisau dapur", "Talenan", "Parutan", "Blender", "Cobek", "Ulekan", "Saringan", "Pengupas (peeler)", "Gunting dapur"],
     "🍽️ Alat Makan & Wadah": ["Piring", "Mangkok", "Sendok", "Garpu", "Pisau makan", "Gelas", "Cangkir", "Sumpit", "Sedotan", "Lemari dapur", "Rak piring", "Toples", "Botol", "Kaleng", "Kotak makanan", "Kulkas", "Freezer", "Wadah plastik"],
     "🧼 Perabot & Tambahan Dapur": ["Lap dapur", "Spons", "Sabun cuci piring", "Ember", "Tempat sampah", "Sarung tangan dapur", "Penjepit makanan", "Sendok sayur", "Spatula", "Meja dapur", "Kursi", "Wastafel", "Keran air", "Rak bumbu"],
@@ -93,7 +93,7 @@ with tab_cari:
     search = st.text_input("Ketik kata dalam Bahasa Indonesia atau Asmat...", placeholder="Cari kata...")
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
-        if res.data:
+        if res and hasattr(res, 'data') and res.data:
             for item in res.data:
                 st.markdown(f"""
                 <div style="background-color: #F5F5DC; border-left: 10px solid #8B4513; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
@@ -123,50 +123,45 @@ with tab_kontribusi:
                     "kategori": kat_pilihan, "nama_penyumbang": nama_p if nama_p else "Anonim",
                     "status_verifikasi": "Pending"
                 }).execute()
-                st.success(f"Berhasil dikirim!")
+                st.success("Berhasil dikirim!")
             else: st.error("Lengkapi data.")
 
-# --- TAB 3: PERBAIKAN PANEL ADMIN ---
+# --- TAB 3: ADMIN (FIXED TYPEERROR) ---
 with tab_admin:
     st.subheader("🛡️ Panel Verifikasi")
     admin_pass = st.text_input("Masukkan Kode Akses Admin", type="password")
     
     if admin_pass == st.secrets.get("ADMIN_PASSWORD", "Bismam2026"):
-        # Ambil data pending
-        res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").order("created_at", descending=True).execute()
-        
-        if res.data:
-            st.info(f"Ada {len(res.data)} data baru yang perlu diperiksa.")
+        # PERBAIKAN: Menambahkan error handling dan pengecekan data
+        try:
+            res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").order("created_at", descending=True).execute()
             
-            for item in res.data:
-                # Gunakan container agar tampilan per item lebih terpisah
-                with st.container():
-                    st.markdown(f"""
-                    <div style="background-color: #EADDCA; padding: 10px; border-radius: 10px; border: 1px solid #8B4513;">
-                        <strong>ID: {item['id']}</strong> | Kategori: {item['kategori']}<br>
-                        <h4 style="margin:5px 0;">{item['kata_asmat']} = {item['arti_indonesia']}</h4>
-                        <small>Disumbangkan oleh: {item.get('nama_penyumbang', 'Anonim')}</small>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    c1, c2 = st.columns(2)
-                    
-                    # Logika Tombol SETUJU
-                    if c1.button(f"SETUJUI ✅", key=f"verify_{item['id']}"):
-                        with st.spinner("Memproses..."):
+            # Cek apakah res memiliki atribut 'data' dan tidak kosong
+            if res and hasattr(res, 'data') and len(res.data) > 0:
+                st.info(f"Ada {len(res.data)} data baru yang perlu diperiksa.")
+                
+                for item in res.data:
+                    with st.container():
+                        st.markdown(f"""
+                        <div style="background-color: #EADDCA; padding: 10px; border-radius: 10px; border: 1px solid #8B4513; margin-bottom: 5px;">
+                            <strong>Kategori: {item['kategori']}</strong><br>
+                            <h4 style="margin:5px 0;">{item['kata_asmat']} = {item['arti_indonesia']}</h4>
+                            <small>Penyumbang: {item.get('nama_penyumbang', 'Anonim')}</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        c1, c2 = st.columns(2)
+                        if c1.button(f"SETUJUI ✅", key=f"v_{item['id']}"):
                             supabase.table("kamus_bismam").update({"status_verifikasi": "Verified"}).eq("id", item['id']).execute()
-                            st.toast(f"Berhasil diverifikasi: {item['kata_asmat']}")
-                            st.rerun() # Refresh untuk update daftar
-                            
-                    # Logika Tombol HAPUS
-                    if c2.button(f"HAPUS ❌", key=f"delete_{item['id']}"):
-                        with st.spinner("Menghapus..."):
-                            supabase.table("kamus_bismam").delete().eq("id", item['id']).execute()
-                            st.toast(f"Data dihapus: {item['kata_asmat']}")
                             st.rerun()
-                    st.write("---")
-        else:
-            st.success("Kerja bagus! Semua data sudah terverifikasi.")
+                        if c2.button(f"HAPUS ❌", key=f"d_{item['id']}"):
+                            supabase.table("kamus_bismam").delete().eq("id", item['id']).execute()
+                            st.rerun()
+                        st.write("---")
+            else:
+                st.success("Semua data sudah terverifikasi.")
+        except Exception as e:
+            st.error(f"Gagal mengambil data: {e}")
     elif admin_pass != "":
         st.error("Kode akses salah.")
 
