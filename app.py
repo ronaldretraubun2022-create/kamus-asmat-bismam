@@ -10,21 +10,22 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- KODE PAMUNGKAS PEMBERSIH TOTAL ---
 # --- JURUS TERAKHIR PEMBERSIH TOTAL (VERSI SAPU JAGAT) ---
+# --- KODE PEMBERSIH TOTAL (VERSI FINAL) ---
 st.markdown(
     """
     <style>
-    /* 1. Menghilangkan Header, Footer, dan Tombol Deploy secara Permanen */
+    /* 1. Menghilangkan Header, Footer, dan Tombol Deploy */
     header, footer, .stDeployButton, #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
 
-    /* 2. MENGHAPUS SEMUA BADGE & TOOLBAR (GITHUB/STREAMLIT) DI SEMUA PERANGKAT */
-    [data-testid="stStatusWidget"], 
-    [data-testid="stToolbar"], 
-    [data-testid="stDecoration"],
+    /* 2. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
     div[class^="viewerBadge"],
     div[class*="viewerBadge"],
+    div[data-testid="stStatusWidget"],
+    div[data-testid="stToolbar"],
+    div[data-testid="stDecoration"],
     button[title="View source on GitHub"],
     .stAppToolbar {
         display: none !important;
@@ -33,20 +34,20 @@ st.markdown(
         width: 0 !important;
         opacity: 0 !important;
         pointer-events: none !important;
-        position: absolute !important;
-        left: -9999px !important;
     }
 
-    /* 3. Menghilangkan sisa ruang di bawah agar tidak bisa di-scroll ke tombol */
+    /* 3. Menghilangkan ruang kosong di bawah agar rapi di HP */
     .stApp {
         margin-bottom: -60px !important;
         padding-bottom: 0px !important;
-        overflow: hidden !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+# --- TAMPILAN HEADER DENGAN LOGO ---
+col1, col2, col3 = st.columns([1, 1, 1])
 
     /* 3. Paksa aplikasi agar tidak memberikan ruang di bawah untuk tombol */
     .stApp {
