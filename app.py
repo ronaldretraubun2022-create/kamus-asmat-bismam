@@ -42,8 +42,8 @@ st.markdown("""
         width: 100%;
     }
     
-    /* Styling Box Input */
-    .stTextInput input {
+    /* Styling Box Input & Selectbox */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         border: 2px solid #8B4513 !important;
         border-radius: 10px !important;
     }
@@ -75,13 +75,41 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. DATA KATEGORI & KOSA KATA ---
+# --- 4. PERLUASAN DATA KOSA KATA (DAFTAR LENGKAP) ---
 DAFTAR_KATA = {
-    "🦴 Anatomi Tubuh": ["Kepala", "Rambut", "Mata", "Telinga", "Hidung", "Mulut", "Tangan", "Kaki", "Jantung", "Darah"],
-    "👨‍👩‍👧‍👦 Keluarga": ["Bapak/Ayah", "Ibu/Mama", "Kakak Laki-laki", "Kakak Perempuan", "Adik", "Kakek", "Nenek", "Paman", "Bibi"],
-    "🍳 Dapur & Rumah": ["Parang", "Kapak", "Periuk", "Piring", "Sendok", "Kayu Bakar", "Api", "Air", "Tungku"],
-    "🍲 Makanan & Alam": ["Sagu", "Ikan", "Ulat Sagu", "Babi Hutan", "Burung", "Hutan", "Sungai", "Dusun", "Perahu", "Dayung"],
-    "🐾 Hewan Papua": ["Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Walabi", "Kuskus", "Buaya", "Ular", "Rusa"]
+    "🦴 Anatomi Tubuh": [
+        "Kepala", "Rambut", "Mata", "Telinga", "Hidung", "Mulut", "Lidah", "Gigi", 
+        "Leher", "Bahu", "Tangan", "Jari", "Kuku", "Dada", "Perut", "Pusar", 
+        "Punggung", "Pinggang", "Kaki", "Lutut", "Tumit", "Kulit", "Darah", "Tulang", "Jantung"
+    ],
+    "👨‍👩‍👧‍👦 Keluarga": [
+        "Bapak/Ayah", "Ibu/Mama", "Anak Laki-laki", "Anak Perempuan", "Kakak", "Adik", 
+        "Kakek", "Nenek", "Cucu", "Paman", "Bibi", "Sepupu", "Keponakan", "Ipar", "Mertua",
+        "Suami", "Istri", "Orang Tua", "Masyarakat/Suku"
+    ],
+    "🍳 Dapur & Rumah": [
+        "Rumah", "Tiang", "Atap", "Dinding", "Lantai", "Tangga", "Pintu", "Jendela", 
+        "Dapur", "Tungku", "Api", "Asap", "Arang", "Kayu Bakar", "Periuk", "Piring", 
+        "Sendok", "Gelas", "Parang", "Kapak", "Tali", "Tikar", "Kelambu"
+    ],
+    "🍲 Makanan & Alam": [
+        "Sagu", "Ulat Sagu", "Ikan", "Daging", "Udang", "Kepiting", "Kerang", 
+        "Kelapa", "Pisang", "Tebu", "Air", "Garam", "Hutan", "Pohon", "Daun", 
+        "Bunga", "Akar", "Tanah", "Batu", "Pasir", "Sungai", "Lumpur", "Rawa", 
+        "Langit", "Matahari", "Bulan", "Bintang", "Awan", "Hujan", "Angin"
+    ],
+    "🐾 Hewan Papua": [
+        "Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Burung", "Sayap", "Bulu",
+        "Buaya", "Ular", "Kura-kura", "Kadal", "Ikan", "Hiu", "Pari",
+        "Rusa", "Babi Hutan", "Kuskus", "Walabi", "Anjing", "Kucing", "Tikus", 
+        "Nyamuk", "Lalat", "Semut", "Laba-laba"
+    ],
+    "🏹 Budaya & Aktivitas": [
+        "Tifa", "Ukiran", "Patung", "Perahu (Kole-kole)", "Dayung", "Busur", "Panah", 
+        "Noken", "Hiasan Kepala", "Garu-garu", "Pesta Adat", "Nyanyian", "Tarian",
+        "Bicara", "Melihat", "Mendengar", "Berjalan", "Lari", "Makan", "Minum", 
+        "Tidur", "Bekerja", "Berburu", "Memancing", "Menebang Sagu"
+    ]
 }
 
 # --- 5. SIDEBAR: GOOGLE TRANSLATE ---
@@ -140,24 +168,21 @@ with tab_cari:
     if total_res.count:
         st.markdown(f"<p style='text-align: center; font-size: 12px; opacity: 0.7;'>Total: {total_res.count} kosakata terverifikasi</p>", unsafe_allow_html=True)
 
-# --- TAB 2: KONTRIBUSI (BAGIAN YANG DIPERBARUI) ---
+# --- TAB 2: KONTRIBUSI ---
 with tab_kontribusi:
     st.subheader("📝 Sumbangkan Kata Baru")
     st.write("Pilih kata Bahasa Indonesia di bawah ini, lalu isi terjemahan Bahasa Asmat-nya.")
     
     with st.form("form_kontribusi", clear_on_submit=True):
-        # 1. Pilih Kategori
         kat_pilihan = st.selectbox("Pilih Kategori Kosakata:", list(DAFTAR_KATA.keys()) + ["✨ Lainnya"])
         
-        # 2. Pilih Kata Indonesia berdasarkan kategori yang dipilih
+        # Logika pilihan kata yang dinamis berdasarkan kategori
         if kat_pilihan in DAFTAR_KATA:
             kata_indo_pilihan = st.selectbox("Pilih Kata Bahasa Indonesia:", DAFTAR_KATA[kat_pilihan])
         else:
             kata_indo_pilihan = st.text_input("Ketik Kata Bahasa Indonesia (Jika tidak ada di daftar):")
         
-        # 3. Kontributor TINGGAL MENGISI BAHASA ASMAT
-        kata_asmat = st.text_input("Tuliskan Bahasa Asmat Rumpun Bismam-nya:", placeholder="Contoh: Terjemahan kata tersebut...")
-        
+        kata_asmat = st.text_input("Tuliskan Bahasa Asmat Rumpun Bismam-nya:", placeholder="Contoh: Terjemahan dalam bahasa Asmat...")
         nama_p = st.text_input("Nama Penyumbang (Opsional)")
         
         if st.form_submit_button("KIRIM TERJEMAHAN"):
