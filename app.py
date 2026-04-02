@@ -60,6 +60,18 @@ st.markdown("""
         padding: 10px;
         font-size: 12px;
     }
+
+    /* Styling khusus Google Translate agar rapi di sidebar */
+    .goog-te-gadget {
+        font-family: sans-serif !important;
+        color: #EADDCA !important;
+    }
+    .goog-te-gadget-simple {
+        background-color: #3E2723 !important;
+        border: 1px solid #8B4513 !important;
+        padding: 5px !important;
+        border-radius: 5px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -72,7 +84,30 @@ DAFTAR_KATA = {
     "🐾 Hewan Papua": ["Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Walabi", "Kuskus", "Buaya", "Ular", "Rusa"]
 }
 
-# --- 5. HEADER ---
+# --- 5. TAMBAHAN: GOOGLE TRANSLATE DI SIDEBAR ---
+with st.sidebar:
+    st.markdown("### 🌐 Terjemahan / Translation")
+    st.write("Gunakan fitur ini untuk menerjemahkan seluruh halaman:")
+    
+    # Skrip Google Translate
+    st.components.v1.html("""
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'id', 
+        includedLanguages: 'en,id', 
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    """, height=100)
+    
+    st.divider()
+    st.info("Aplikasi ini berfokus pada pelestarian Bahasa Asmat Rumpun Bismam.")
+
+# --- 6. HEADER ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     try: 
@@ -80,12 +115,11 @@ with col2:
     except: 
         st.markdown("<h1 style='text-align: center; color: #8B4513;'>🏹</h1>", unsafe_allow_html=True)
 
-# Judul Baru sesuai permintaan
 st.markdown("<h2 style='text-align: center; color: #8B4513; margin-top: -20px; font-weight: bold;'>KAMUS DIGITAL BAHASA ASMAT<br>RUMPUN BISMAM</h2>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-style: italic; color: #6F4E37;'>Melestarikan Budaya Lewat Bahasa - Papua Selatan</p>", unsafe_allow_html=True)
 st.divider()
 
-# --- 6. NAVIGASI TABS ---
+# --- 7. NAVIGASI TABS ---
 tab_cari, tab_kontribusi, tab_admin = st.tabs(["🔍 CARI KATA", "📝 KONTRIBUSI", "🛡️ PANEL ADMIN"])
 
 # --- TAB 1: CARI KATA ---
@@ -106,7 +140,7 @@ with tab_cari:
         else:
             st.warning("Kata belum ditemukan atau belum diverifikasi.")
     
-    # Menampilkan total kata yang tersedia (Statistik Dasar)
+    # Statistik Dasar
     total_res = supabase.table("kamus_bismam").select("id", count="exact").eq("status_verifikasi", "Verified").execute()
     if total_res.count:
         st.markdown(f"<p style='text-align: center; font-size: 12px; opacity: 0.7;'>Total: {total_res.count} kosakata terverifikasi</p>", unsafe_allow_html=True)
