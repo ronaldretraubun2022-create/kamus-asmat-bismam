@@ -3,16 +3,19 @@ from supabase import create_client, Client
 import pandas as pd
 import io
 
+# --- KONFIGURASI HALAMAN ---
+st.set_page_config(page_title="Kamus Asmat Bismam", page_icon="🏹")
+
 # --- KONEKSI KE DATABASE ---
 SUPABASE_URL = "https://obmomopxcmsgzjjseevh.supabase.co"
 SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- KODE PEMBERSIH (PASTIKAN MENEMPEL DI PINGGIR KIRI) ---
+# --- KODE PEMBERSIH TOTAL (GITHUB & STREAMLIT) ---
 st.markdown(
     """
     <style>
-    /* 1. Hilangkan Header & Footer */
+    /* 1. Hilangkan Header, Footer, dan Tombol Deploy */
     header, footer, .stDeployButton, #MainMenu {
         display: none !important;
         visibility: hidden !important;
@@ -39,19 +42,7 @@ st.markdown(
         margin-bottom: -60px !important;
         padding-bottom: 0px !important;
     }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-# --- TAMPILAN HEADER DENGAN LOGO ---
-col1, col2, col3 = st.columns([1, 1, 1])
-
-    /* 3. Paksa aplikasi agar tidak memberikan ruang di bawah untuk tombol */
-    .stApp {
-        margin-bottom: -50px !important;
-        padding-bottom: 0px !important;
-    }
-
+    
     /* 4. Khusus untuk tampilan Mobile/HP */
     @media screen and (max-width: 768px) {
         div[class^="viewerBadge"] {
@@ -65,13 +56,12 @@ col1, col2, col3 = st.columns([1, 1, 1])
 
 # --- TAMPILAN HEADER DENGAN LOGO ---
 col1, col2, col3 = st.columns([1, 1, 1])
-# --- TAMPILAN HEADER DENGAN LOGO ---
-col1, col2, col3 = st.columns([1, 1, 1])
-col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    # Menggunakan gambar perisai Asmat sebagai identitas budaya
-    # Menampilkan logo Museum Asmat yang baru diupload
+    # Menampilkan logo Museum Asmat
+    try:
         st.image("MUSEUM ASMAT.png", width=150)
+    except:
+        pass
 
 st.markdown("<h1 style='text-align: center; color: #8B4513; margin-bottom: 0;'>🏹 KAMUS BAHASA ASMAT</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #5D4037; font-weight: bold; font-size: 20px;'>RUMPUN BISMAM</p>", unsafe_allow_html=True)
@@ -88,18 +78,17 @@ if menu == "🔍 Cari Kata":
     if search:
         res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Verified").or_(f"kata_asmat.ilike.%{search}%,arti_indonesia.ilike.%{search}%").execute()
         if res.data:
-                    # --- TAMPILAN KARTU KAMUS ETNIK ---
-                    for item in res.data:
-                        st.markdown(f"""
-                        <div style="
-                            border: 1px solid #EADDCA; 
-                            border-left: 8px solid #8B4513; 
-                            padding: 20px; 
-                            border-radius: 15px; 
-                            background-color: #FFFDF9; 
-                            margin-bottom: 15px; 
-                            box-shadow: 2px 4px 8px rgba(0,0,0,0.05);
-                        <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
+            for item in res.data:
+                st.markdown(f"""
+                <div style="
+                    border: 1px solid #EADDCA; 
+                    border-left: 8px solid #8B4513; 
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    background-color: #FFFDF9; 
+                    margin-bottom: 15px; 
+                    box-shadow: 2px 4px 8px rgba(0,0,0,0.05);">
+                    <h2 style="margin: 0; color: #8B4513; font-family: sans-serif;">{item['kata_asmat']}</h2>
                     <hr style="border: 0.5px solid #EADDCA; margin: 10px 0;">
                     <p style="margin: 5px 0; color: #5D4037; font-size: 18px;">
                         <span style="background-color: #8B4513; color: white; padding: 2px 8px; border-radius: 5px; font-size: 14px; margin-right: 10px;">Arti</span>
@@ -107,7 +96,7 @@ if menu == "🔍 Cari Kata":
                     </p>
                     <div style="margin-top: 10px; padding: 10px; background-color: #F5F5DC; border-radius: 8px; border-left: 3px solid #6F4E37;">
                         <p style="margin: 0; color: #6F4E37; font-style: italic; font-size: 15px;">
-                            "Contoh: {item['contoh_kalimat']}"
+                            "Contoh: {item.get('contoh_kalimat', '-')}"
                         </p>
                     </div>
                 </div>
@@ -146,7 +135,6 @@ elif menu == "🛡️ Verifikasi Admin":
     password = st.text_input("Masukkan Kode Akses Admin", type="password")
     
     if password == "Bismam2026":
-        # --- TOMBOL DOWNLOAD DATABASE UNTUK ADMIN ---
         st.info("📊 Panel Download Database")
         all_data = supabase.table("kamus_bismam").select("*").execute()
         if all_data.data:
