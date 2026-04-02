@@ -61,7 +61,7 @@ st.markdown("""
         font-size: 12px;
     }
 
-    /* Styling khusus Google Translate agar rapi di sidebar */
+    /* Styling khusus Google Translate */
     .goog-te-gadget {
         font-family: sans-serif !important;
         color: #EADDCA !important;
@@ -75,7 +75,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. DATA KATEGORI ---
+# --- 4. DATA KATEGORI & KOSA KATA ---
 DAFTAR_KATA = {
     "🦴 Anatomi Tubuh": ["Kepala", "Rambut", "Mata", "Telinga", "Hidung", "Mulut", "Tangan", "Kaki", "Jantung", "Darah"],
     "👨‍👩‍👧‍👦 Keluarga": ["Bapak/Ayah", "Ibu/Mama", "Kakak Laki-laki", "Kakak Perempuan", "Adik", "Kakek", "Nenek", "Paman", "Bibi"],
@@ -84,12 +84,9 @@ DAFTAR_KATA = {
     "🐾 Hewan Papua": ["Cendrawasih", "Kasuari", "Kakatua", "Mambruk", "Walabi", "Kuskus", "Buaya", "Ular", "Rusa"]
 }
 
-# --- 5. TAMBAHAN: GOOGLE TRANSLATE DI SIDEBAR ---
+# --- 5. SIDEBAR: GOOGLE TRANSLATE ---
 with st.sidebar:
     st.markdown("### 🌐 Terjemahan / Translation")
-    st.write("Gunakan fitur ini untuk menerjemahkan seluruh halaman:")
-    
-    # Skrip Google Translate
     st.components.v1.html("""
     <div id="google_translate_element"></div>
     <script type="text/javascript">
@@ -103,7 +100,6 @@ with st.sidebar:
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     """, height=100)
-    
     st.divider()
     st.info("Aplikasi ini berfokus pada pelestarian Bahasa Asmat Rumpun Bismam.")
 
@@ -140,40 +136,42 @@ with tab_cari:
         else:
             st.warning("Kata belum ditemukan atau belum diverifikasi.")
     
-    # Statistik Dasar
     total_res = supabase.table("kamus_bismam").select("id", count="exact").eq("status_verifikasi", "Verified").execute()
     if total_res.count:
         st.markdown(f"<p style='text-align: center; font-size: 12px; opacity: 0.7;'>Total: {total_res.count} kosakata terverifikasi</p>", unsafe_allow_html=True)
 
-# --- TAB 2: KONTRIBUSI ---
+# --- TAB 2: KONTRIBUSI (BAGIAN YANG DIPERBARUI) ---
 with tab_kontribusi:
     st.subheader("📝 Sumbangkan Kata Baru")
-    metode = st.radio("Pilih Metode Kontribusi:", ["⌨️ Teks", "🎙️ Audio"])
+    st.write("Pilih kata Bahasa Indonesia di bawah ini, lalu isi terjemahan Bahasa Asmat-nya.")
     
-    if metode == "⌨️ Teks":
-        with st.form("form_kontribusi", clear_on_submit=True):
-            kat = st.selectbox("Pilih Kategori:", list(DAFTAR_KATA.keys()) + ["✨ Lainnya"])
-            kata_indo = st.text_input("Kata Indonesia")
-            kata_asmat = st.text_input("Bahasa Asmat")
-            nama_p = st.text_input("Nama Penyumbang (Opsional)")
-            
-            if st.form_submit_button("KIRIM TERJEMAHAN"):
-                if kata_indo and kata_asmat:
-                    supabase.table("kamus_bismam").insert({
-                        "kata_asmat": kata_asmat, 
-                        "arti_indonesia": kata_indo, 
-                        "kategori": kat, 
-                        "nama_penyumbang": nama_p if nama_p else "Anonim",
-                        "status_verifikasi": "Pending"
-                    }).execute()
-                    st.success("Terima kasih! Kontribusi Anda masuk daftar tunggu verifikasi.")
-                else:
-                    st.error("Mohon lengkapi kata Indonesia dan Asmat.")
-    else:
-        st.info("Fitur Rekaman: Sebutkan kata Indonesia dan padanannya dalam bahasa Asmat.")
-        audio = st.audio_input("Rekam Suara")
-        if audio: 
-            st.success("Rekaman diterima! Admin akan segera memproses.")
+    with st.form("form_kontribusi", clear_on_submit=True):
+        # 1. Pilih Kategori
+        kat_pilihan = st.selectbox("Pilih Kategori Kosakata:", list(DAFTAR_KATA.keys()) + ["✨ Lainnya"])
+        
+        # 2. Pilih Kata Indonesia berdasarkan kategori yang dipilih
+        if kat_pilihan in DAFTAR_KATA:
+            kata_indo_pilihan = st.selectbox("Pilih Kata Bahasa Indonesia:", DAFTAR_KATA[kat_pilihan])
+        else:
+            kata_indo_pilihan = st.text_input("Ketik Kata Bahasa Indonesia (Jika tidak ada di daftar):")
+        
+        # 3. Kontributor TINGGAL MENGISI BAHASA ASMAT
+        kata_asmat = st.text_input("Tuliskan Bahasa Asmat Rumpun Bismam-nya:", placeholder="Contoh: Terjemahan kata tersebut...")
+        
+        nama_p = st.text_input("Nama Penyumbang (Opsional)")
+        
+        if st.form_submit_button("KIRIM TERJEMAHAN"):
+            if kata_indo_pilihan and kata_asmat:
+                supabase.table("kamus_bismam").insert({
+                    "kata_asmat": kata_asmat, 
+                    "arti_indonesia": kata_indo_pilihan, 
+                    "kategori": kat_pilihan, 
+                    "nama_penyumbang": nama_p if nama_p else "Anonim",
+                    "status_verifikasi": "Pending"
+                }).execute()
+                st.success(f"Terima kasih! Terjemahan untuk '{kata_indo_pilihan}' telah dikirim ke Admin.")
+            else:
+                st.error("Mohon isi terjemahan Bahasa Asmat terlebih dahulu.")
 
 # --- TAB 3: ADMIN ---
 with tab_admin:
@@ -194,7 +192,7 @@ with tab_admin:
                         supabase.table("kamus_bismam").delete().eq("id", item['id']).execute()
                         st.rerun()
         else:
-            st.info("Tidak ada kontribusi baru yang perlu diperiksa.")
+            st.info("Tidak ada kontribusi baru.")
 
 # --- FOOTER ---
 st.markdown("""
