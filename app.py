@@ -8,19 +8,17 @@ SUPABASE_URL = "https://obmomopxcmsgzjjseevh.supabase.co"
 SUPABASE_KEY = "sb_publishable_dblztCyFjxkydZCGjlEMCQ_1CMxgsuI"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- KODE PAMUNGKAS PEMBERSIH TOTAL ---
-# --- JURUS TERAKHIR PEMBERSIH TOTAL (VERSI SAPU JAGAT) ---
-# --- KODE PEMBERSIH TOTAL (VERSI FINAL) ---
+# --- KODE PEMBERSIH (PASTIKAN MENEMPEL DI PINGGIR KIRI) ---
 st.markdown(
     """
     <style>
-    /* 1. Menghilangkan Header, Footer, dan Tombol Deploy */
+    /* 1. Hilangkan Header & Footer */
     header, footer, .stDeployButton, #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
 
-    /* 2. PAKSA HILANGKAN TOMBOL GITHUB (POJOK KANAN BAWAH) */
+    /* 2. PAKSA HILANGKAN TOMBOL GITHUB & TOOLBAR */
     div[class^="viewerBadge"],
     div[class*="viewerBadge"],
     div[data-testid="stStatusWidget"],
@@ -36,7 +34,7 @@ st.markdown(
         pointer-events: none !important;
     }
 
-    /* 3. Menghilangkan ruang kosong di bawah agar rapi di HP */
+    /* 3. Rapikan margin bawah agar bersih */
     .stApp {
         margin-bottom: -60px !important;
         padding-bottom: 0px !important;
@@ -45,7 +43,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # --- TAMPILAN HEADER DENGAN LOGO ---
 col1, col2, col3 = st.columns([1, 1, 1])
 
