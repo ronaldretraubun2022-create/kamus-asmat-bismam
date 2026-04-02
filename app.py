@@ -3,7 +3,7 @@ from supabase import create_client, Client
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Kamus Asmat Bismam", 
+    page_title="Kamus Bahasa Asmat Rumpun Bismam", 
     page_icon="🏹", 
     layout="centered"
 )
