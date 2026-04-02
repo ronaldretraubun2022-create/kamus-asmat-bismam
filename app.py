@@ -1,10 +1,3 @@
-Minta maaf sekali, ini murni kesalahan teknis pada penulisan parameter `order`. Di versi terbaru pustaka Supabase untuk Python, parameter untuk mengurutkan data bukan lagi `descending=True`, melainkan menggunakan argumen `desc=True`.
-
-Inilah penyebab munculnya pesan error *unexpected keyword argument 'descending'*. Saya sudah memperbaiki baris tersebut agar Panel Admin Anda bisa terbuka dengan lancar.
-
-Berikut adalah kode lengkap yang sudah diperbaiki:
-
-```python
 import streamlit as st
 from supabase import create_client, Client
 import requests
@@ -133,14 +126,13 @@ with tab_kontribusi:
                 st.success("Berhasil dikirim!")
             else: st.error("Lengkapi data.")
 
-# --- TAB 3: ADMIN (PERBAIKAN PARAMETER ORDER) ---
+# --- TAB 3: ADMIN ---
 with tab_admin:
     st.subheader("🛡️ Panel Verifikasi")
     admin_pass = st.text_input("Masukkan Kode Akses Admin", type="password")
     
     if admin_pass == st.secrets.get("ADMIN_PASSWORD", "Bismam2026"):
         try:
-            # PERBAIKAN: Menggunakan desc=True untuk versi terbaru supabase-py
             res = supabase.table("kamus_bismam").select("*").eq("status_verifikasi", "Pending").order("created_at", desc=True).execute()
             
             if res and hasattr(res, 'data') and len(res.data) > 0:
@@ -172,5 +164,4 @@ with tab_admin:
         st.error("Kode akses salah.")
 
 # --- FOOTER ---
-st.markdown("""<div class="footer">© 2026 Museum Kebudayaan dan Kemajuan Asmat - Papua Selatan</div>""", unsafe_allow_html=True)
-```
+st.markdown("""<div class="footer">© 2026 Kamus Digital Asmat Rumpun Bismam - Papua Selatan</div>""", unsafe_allow_html=True)
